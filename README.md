@@ -92,7 +92,7 @@ http://127.0.0.1:8000/api/
 
 
 * ## /api/exchangerates
-![Home page](./img/exchangerates.PNG)
+![Exchangerates](./img/exchangerates.PNG)
 
 Example request
 
