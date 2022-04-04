@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.dockerfile
+    env_file:
+      - .env
+    container_name: ${APP_CONTAINER_NAME}-${APP_ENV}
+    hostname: ${APP_CONTAINER_NAME}-${APP_ENV}
+    ports:
+      - "${APP_PORT}:8000"
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    restart: unless-stopped
