@@ -88,11 +88,11 @@ your preferred browser.
 http://127.0.0.1:8000/api/
 ```
 * ## /api
-![Home page](./img/home.PNG)
+![Home page](img/home.png)
 
 
 * ## /api/exchangerates
-![Exchangerates](./img/exchangerates.PNG)
+![Exchangerates](img/exchangerates.png)
 
 Example request
 
