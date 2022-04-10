@@ -1,5 +1,6 @@
 import requests
 import datetime
+import json
 
 # given date format from reqeust this function returns starting and ending date in format YYYY-MM-DD
 def convertPeriod(date):
@@ -79,3 +80,56 @@ def checkDate(dateList):
     if not((datetime.date(year2, month2, day2) - datetime.date(year1, month1, day1)).days < 367):
         return False
     return True
+
+def getHistoryData(currencies, startDate, endDate):
+    startYear, startMonth, startDay = [int(x) for x in startDate.split("-")]
+    endYear, endMonth, endDay = [int(x) for x in endDate.split("-")]
+    currencyCodes = currencies
+    
+    with open("/api/app/api/data.txt") as file:
+        allData = json.load(file)
+
+    currenciesPeriodPrices = {}
+
+    for currencyCode in currencyCodes:
+        currenciesPeriodPrices[currencyCode] = []
+
+    for dayInfo in allData:
+        date = dayInfo["effectiveDate"]
+        year, month, day = [int(x) for x in date.split("-")]
+        if datetime.datetime(year=startYear, month=startMonth, day=startDay) <= datetime.datetime(year=year, month=month, day=day) <= datetime.datetime(year=endYear, month=endMonth, day=endDay):
+            print(datetime.datetime(year=year, month=month, day=day))
+            currencyInformation = dayInfo["rates"]
+            for information in currencyInformation:
+                if information["code"] in currencyCodes:
+                    currenciesPeriodPrices[information["code"]].append(information["mid"])
+                    
+    return currenciesPeriodPrices
+                    
+                    
+def createHistoryDataResponse(currenciesPeriodPrices):
+    arrayResponse = []
+    
+    for currencyName in currenciesPeriodPrices:
+        maxPrice = max(currenciesPeriodPrices[currencyName])
+        minPrice = min(currenciesPeriodPrices[currencyName])
+        startPrice = currenciesPeriodPrices[currencyName][0]
+        endPrice = currenciesPeriodPrices[currencyName][len(currenciesPeriodPrices[currencyName]) - 1]
+        
+        priceDifference = endPrice - startPrice
+        priceDifferencePercentage = ((endPrice - startPrice) / startPrice) * 100
+        minMaxDifference = maxPrice - minPrice
+        minMaxDifferencePercentage = (maxPrice - minPrice) / maxPrice * 100
+        
+        parsedData = {
+                    "currency": currencyName,
+                    "maxPrice": maxPrice, 
+                    "minPrice": minPrice, 
+                    "intervalPriceDifference": priceDifference,
+                    "intervalPriceDifferencePercentage": priceDifferencePercentage,
+                    "minMaxDifference": minMaxDifference,
+                    "minMaxDifferencePercentage": minMaxDifferencePercentage
+                    }
+        
+        arrayResponse.append(parsedData)
+    return arrayResponse

@@ -13,7 +13,9 @@
 ## General
 This project is a small API, which allows to list basic information about currencies rates against Polish PLN from NBP api, given the abbreviation of the currency and interval of time.
 
-All data is returned in JSON format.   
+All data is returned in JSON format.
+
+To avoid contacting original endpoint I have created a file containing data from 2021-01-01 to 2022-04-10 so that it is not dependent on outer API. It is just an example solution which does not cover all the data.
 
 ## Setup
 
@@ -93,6 +95,12 @@ http://127.0.0.1:8000/api/
 
 * ## /api/exchangerates
 ![Exchangerates](img/exchangerates.png)
+
+* ## /api/history
+
+On this endpoint you can only request data from period starting from 2021-01-01 and ending on 2022-04-10. It uses local file and gets information from it.
+
+![Exchangerates](img/history.png)
 
 Example request
 

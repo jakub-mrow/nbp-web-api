@@ -15,7 +15,8 @@ headers = {
 @api_view(['GET'])
 def apiInformation(request):
     information = {
-        "api/exchangerates": "POST"
+        "api/exchangerates": "POST",
+        "api/history": "POST"
     }
     return Response(information)
 
@@ -46,4 +47,24 @@ def getCurrenciesData(request):
     elif sortingOrder == "descending":
         responseStructure = sorted(responseStructure, key = lambda c: c["currency"], reverse=True)
 
+    return Response(responseStructure)
+
+@api_view(['POST'])
+def historyData(request):
+    serializer = CurrenciesSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    
+    currencies = request.data["currencies"]
+    period = request.data["period"]
+    sortingOrder = request.data["sortingOrder"]
+    startDate, endDate = con.convertPeriod(period)
+    
+    currenciesPeriodPrices = con.getHistoryData(currencies, startDate, endDate)
+    historyDataResponse = con.createHistoryDataResponse(currenciesPeriodPrices)
+    
+    if sortingOrder == "ascending":
+        responseStructure = sorted(historyDataResponse, key = lambda c: c["currency"])
+    elif sortingOrder == "descending":
+        responseStructure = sorted(historyDataResponse, key = lambda c: c["currency"], reverse=True)
+    
     return Response(responseStructure)
